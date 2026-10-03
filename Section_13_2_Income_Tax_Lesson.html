@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 13.2 Personal Income Tax</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fbf7ec; --card:#fffdf7; --rule:rgba(14,107,104,.10); --margin:rgba(201,127,0,.30);
+  --teal:#0e6b68; --teal-d:#0a4f4d; --teal-l:#e3f1ef;
+  --amber:#c97f00; --amber-l:#fdf1d8;
+  --ink:#22313a; --muted:#5b6b73; --edge:#e3d8bd;
+  --ok:#2f7d4f; --ok-l:#e5f4ea; --bad:#b73a2e; --bad-l:#fbe9e6;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:17px; line-height:1.6; color:var(--ink);
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(90deg,transparent 44px,var(--margin) 44px,var(--margin) 46px,transparent 46px),
+    repeating-linear-gradient(180deg,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px);
+}
+.wrap{max-width:900px;margin:0 auto;padding:22px 18px 70px 64px}
+@media (max-width:640px){
+  body{background-image:repeating-linear-gradient(180deg,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px)}
+  .wrap{padding:14px 12px 60px 14px}
+}
+h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif;color:var(--teal-d);line-height:1.2;margin:0 0 .4em}
+h1{font-size:2.1rem}
+h2{font-size:1.45rem;margin-top:.2em}
+h3{font-size:1.15rem}
+p{margin:.5em 0}
+header .sub{color:var(--muted);font-weight:600}
+.tabs{display:flex;gap:6px;border-bottom:3px solid var(--teal);margin:18px 0 22px;flex-wrap:wrap}
+.tab{border:none;background:var(--teal-l);color:var(--teal-d);font-family:inherit;font-size:16px;font-weight:700;padding:11px 18px;border-radius:10px 10px 0 0;cursor:pointer}
+.tab.active{background:var(--teal);color:#fff}
+.tab:focus-visible,.btn:focus-visible,.skill:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 2px 0 var(--edge)}
+.formula{background:var(--amber-l);border-left:5px solid var(--amber);padding:10px 14px;border-radius:6px;font-weight:700;margin:10px 0}
+.example{background:var(--teal-l);border-radius:10px;padding:12px 16px;margin:12px 0}
+.example .t{font-weight:700;color:var(--teal-d)}
+.rulelist{margin:8px 0;padding-left:0;list-style:none}
+.rulelist li{padding:6px 0 6px 14px;border-left:3px solid var(--teal);margin:6px 0;background:#fff;border-radius:0 6px 6px 0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0}
+.flow span.box{background:#fff;border:2px solid var(--teal);border-radius:8px;padding:5px 10px;font-weight:700;color:var(--teal-d)}
+.flow span.op{font-weight:700;color:var(--amber)}
+.skills{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+.skill{border:2px solid var(--teal);background:#fff;color:var(--teal-d);font-family:inherit;font-weight:700;font-size:15px;padding:8px 13px;border-radius:999px;cursor:pointer}
+.skill.active{background:var(--teal);color:#fff}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.pill{background:var(--amber-l);border:1px solid #efd39a;color:#7a4d00;font-weight:700;padding:4px 12px;border-radius:999px;font-size:15px}
+.tag{display:inline-block;background:var(--teal-l);color:var(--teal-d);font-weight:700;font-size:14px;padding:3px 10px;border-radius:6px;margin-bottom:8px}
+.stem{font-size:18px;margin-bottom:6px}
+.part{margin:14px 0}
+.part > .q{display:block;font-weight:700;margin-bottom:6px}
+.inbox{display:inline-flex;align-items:center;border:2px solid #cfc3a5;border-radius:10px;background:#fff;overflow:hidden;max-width:100%}
+.inbox span{padding:0 10px;color:var(--muted);font-weight:700;white-space:nowrap}
+.inbox input{border:none;outline:none;font-family:inherit;font-size:18px;padding:9px 8px;width:190px;max-width:52vw;background:transparent;color:var(--ink)}
+.inbox:focus-within{border-color:var(--teal)}
+.inbox.ok,.choices.ok{border-color:var(--ok);background:var(--ok-l)}
+.inbox.bad,.choices.bad{border-color:var(--bad);background:var(--bad-l)}
+.choices{display:inline-flex;gap:16px;flex-wrap:wrap;border:2px solid transparent;border-radius:10px;padding:6px 10px}
+.choice{display:flex;align-items:center;gap:6px;font-weight:600;cursor:pointer}
+.choice input{width:18px;height:18px;accent-color:var(--teal)}
+.note{color:var(--muted);font-size:14px;margin-top:3px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{border:none;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;padding:11px 18px;cursor:pointer}
+.btn.primary{background:var(--teal);color:#fff}
+.btn.primary:hover{background:var(--teal-d)}
+.btn.help{background:var(--amber);color:#fff}
+.btn.help:hover{background:#a86a00}
+.btn.ghost{background:#fff;color:var(--teal-d);border:2px solid var(--teal)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.fb{margin-top:14px;border-radius:10px;padding:12px 16px;display:none}
+.fb.show{display:block}
+.fb.good{background:var(--ok-l);border-left:5px solid var(--ok)}
+.fb.wrong{background:var(--bad-l);border-left:5px solid var(--bad)}
+.fb.info{background:var(--amber-l);border-left:5px solid var(--amber)}
+.fb ul{margin:6px 0 0;padding-left:20px}
+.hints{margin-top:14px}
+.step{background:#fff;border:1px dashed var(--amber);border-radius:10px;padding:10px 14px;margin:8px 0}
+.step .n{font-weight:700;color:var(--amber);font-size:14px}
+.answer{background:var(--teal-l);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:17px}
+.aq .qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.aq .pts{color:var(--muted);font-weight:700;font-size:15px}
+.reveal{margin-top:8px;color:var(--bad);font-weight:600}
+.scorebar{position:sticky;top:0;z-index:5;background:var(--paper);padding:8px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--edge);margin-bottom:14px}
+.badge{background:var(--teal);color:#fff;font-weight:700;padding:7px 14px;border-radius:999px}
+.namebox input{font-family:inherit;font-size:17px;padding:8px 10px;border:2px solid #cfc3a5;border-radius:10px;width:260px;max-width:100%}
+.final{border:3px solid var(--teal);background:#fff}
+.final .big{font-family:Fraunces,Georgia,serif;font-size:2.6rem;color:var(--teal-d);font-weight:700}
+.final ul{padding-left:20px}
+.overlay{position:fixed;inset:0;background:rgba(20,30,35,.45);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+.overlay.show{display:flex}
+.modal{background:var(--card);border-radius:14px;padding:22px;max-width:440px;width:100%;border:2px solid var(--teal)}
+/* reference tables */
+details.tables{margin:12px 0;border:2px solid var(--teal-l);border-radius:10px;background:#fff}
+details.tables > summary{cursor:pointer;font-weight:700;color:var(--teal-d);padding:9px 14px;background:var(--teal-l);border-radius:8px}
+details.tables .inner{padding:10px 14px}
+.tblwrap{overflow-x:auto;margin:8px 0 14px}
+.tbltitle{font-weight:700;color:var(--teal-d);margin-bottom:4px}
+table.sched{border-collapse:collapse;width:100%;min-width:480px;font-size:15.5px;background:#fff}
+table.sched th{background:var(--teal);color:#fff;text-align:left;padding:6px 10px;font-weight:700}
+table.sched td{padding:5px 10px;border-bottom:1px solid var(--edge)}
+table.sched tr:nth-child(even) td{background:#faf6ea}
+.stdbox{background:var(--amber-l);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:15.5px}
+@media (prefers-reduced-motion:no-preference){.fb.show,.step,.answer{animation:pop .25s ease-out}@keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Personal Income Tax</h1>
+  <div class="sub">Section 13.2 &nbsp;|&nbsp; Business Mathematics &nbsp;|&nbsp; 2022 tax tables</div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="learn" role="tab">Lesson</button>
+  <button class="tab" data-tab="tables" role="tab">Tax Tables</button>
+  <button class="tab" data-tab="practice" role="tab">Practice</button>
+  <button class="tab" data-tab="assign" role="tab">Assignment</button>
+</nav>
+
+<!-- ================= LESSON ================= -->
+<section class="panel active" id="learn">
+  <div class="card">
+    <h2>The big idea</h2>
+    <p>Every year, people who earn money pay <b>federal income tax</b>. The tax is not figured on everything you earn. You start with your total income, take away certain amounts, and then use a <b>tax rate schedule</b> to find the tax on what is left.</p>
+    <p>Here is the path every problem in this section follows:</p>
+    <div class="flow">
+      <span class="box">Total income</span><span class="op">− adjustments =</span>
+      <span class="box">Adjusted gross income</span><span class="op">− deduction =</span>
+      <span class="box">Taxable income</span><span class="op">→ schedule →</span>
+      <span class="box">Tax owed</span>
+    </div>
+    <p>At the end, you compare the tax owed with the tax that was already <b>withheld</b> from your paychecks to see if you get a <b>refund</b> or <b>owe more</b>.</p>
+  </div>
+
+  <div class="card">
+    <h2>1. Income and adjusted gross income (AGI)</h2>
+    <ul class="rulelist">
+      <li><b>Income from jobs</b> (wages or salary) is the money you earn from working.</li>
+      <li><b>Interest</b> is money a bank or credit union pays you on savings.</li>
+      <li><b>Dividend income</b> is money a company pays you because you own its stock.</li>
+      <li><b>Miscellaneous (other) income</b> is anything else, such as tips, prizes, or side jobs.</li>
+      <li><b>Adjustments to income</b> are special amounts the law lets you subtract before anything else, such as IRA contributions, student loan interest, or educator expenses.</li>
+      <li><b>Adjusted gross income (AGI)</b> is your total income minus your adjustments.</li>
+    </ul>
+    <div class="formula">AGI = (Jobs + Interest + Dividends + Miscellaneous income) − Adjustments to income</div>
+    <div class="example">
+      <div class="t">Example (Worksheet #1)</div>
+      Income from jobs $23,180, interest $335, miscellaneous income $2,494, dividends $55, and adjustments $2,878.<br>
+      Total income: $23,180 + $335 + $2,494 + $55 = $26,064.<br>
+      AGI: $26,064 − $2,878 = <b>$23,186</b>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Filing status</h2>
+    <p>Your <b>filing status</b> tells which standard deduction and which tax schedule to use. Problems show it with a letter after the name.</p>
+    <ul class="rulelist">
+      <li><b>S = Single.</b> Not married. Uses Schedule X.</li>
+      <li><b>M = Married filing jointly.</b> A married couple files one return together. Uses Schedule Y-1.</li>
+      <li><b>MS = Married filing separately.</b> Each spouse files his or her own return. Uses Schedule Y-2.</li>
+      <li><b>HH = Head of household.</b> Not married and pays more than half the cost of a home for a dependent, such as a child. Uses Schedule Z.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>3. Deductions: standard or itemized</h2>
+    <p>A <b>deduction</b> is an amount you subtract from your AGI. You get to choose <b>one</b> of two kinds, and you always choose the <b>larger</b> one because it lowers your tax more.</p>
+    <p><b>The standard deduction</b> is a set amount that depends only on your filing status:</p>
+    <ul class="rulelist">
+      <li>Single: <b>$12,950</b></li>
+      <li>Married filing jointly: <b>$25,900</b></li>
+      <li>Married filing separately: <b>$12,950</b></li>
+      <li>Head of household: <b>$19,400</b></li>
+    </ul>
+    <p><b>Itemized deductions</b> are your actual expenses that the law allows you to list, and add up. The common ones are:</p>
+    <ul class="rulelist">
+      <li><b>State and local taxes</b>: state income tax, city income tax, and property (real estate) tax.</li>
+      <li><b>Mortgage interest</b>: the interest paid on a home loan.</li>
+      <li><b>Charitable contributions</b>: gifts to churches and charities.</li>
+    </ul>
+    <div class="formula">Limit: state and local taxes together can count for at most $10,000. For married filing separately, the limit is $5,000.</div>
+    <div class="example">
+      <div class="t">Example (Worksheet #15)</div>
+      Liz Karsten is married filing separately. She paid $14,300 in state income tax and $8,900 in real estate tax. That is $23,200 of state and local taxes, but she can count only <b>$5,000</b>.<br>
+      Her itemized deductions are $7,630 mortgage interest + $5,000 taxes + $13,000 contributions = <b>$25,630</b>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Taxable income</h2>
+    <div class="formula">Taxable income = AGI − the larger deduction</div>
+    <div class="example">
+      <div class="t">Example (Worksheet #5)</div>
+      R. Rodriguez is single with an AGI of $36,460 and itemized deductions of $4,900.<br>
+      The standard deduction for single is $12,950. Since $12,950 is larger than $4,900, use the <b>standard deduction</b>.<br>
+      Taxable income: $36,460 − $12,950 = <b>$23,510</b>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5. Using a tax rate schedule</h2>
+    <p>Each row of a schedule gives a range of taxable income. You find the row where your income fits, then use that row's rule:</p>
+    <div class="formula">Tax = Base amount + Rate × (Taxable income − "amount over" number)</div>
+    <p>The rate is used <b>only on the part of your income above</b> the start of the row. The base amount already covers the tax on everything below it. This is why moving into a higher bracket never makes your whole income taxed at the higher rate.</p>
+    <div class="example">
+      <div class="t">Example (continuing Rodriguez, Schedule X)</div>
+      $23,510 is over $10,275 but not over $41,775. That row says $1,027.50 + 12% of the amount over $10,275.<br>
+      Amount over: $23,510 − $10,275 = $13,235.<br>
+      12% of that: 0.12 × $13,235 = $1,588.20.<br>
+      Add the base: $1,027.50 + $1,588.20 = <b>$2,615.70</b>.
+    </div>
+    <p>All four schedules are on the <b>Tax Tables</b> tab, and each practice problem shows the table it needs.</p>
+  </div>
+
+  <div class="card">
+    <h2>6. Withholding: refund or tax due</h2>
+    <p>Employers take federal income tax out of each paycheck. This is called <b>withholding</b>. To find the total for the year, multiply by the number of paychecks:</p>
+    <ul class="rulelist">
+      <li>Weekly: multiply by <b>52</b>.</li>
+      <li>Monthly: multiply by <b>12</b>.</li>
+    </ul>
+    <ul class="rulelist">
+      <li>If more was withheld than the tax owed, you get a <b>refund</b> of the difference.</li>
+      <li>If less was withheld than the tax owed, you <b>owe</b> the difference (tax due).</li>
+    </ul>
+    <div class="example">
+      <div class="t">Example (Worksheet #8)</div>
+      L. Karecki is single with a taxable income of $30,650, and $74.46 was withheld weekly.<br>
+      Tax: $1,027.50 + 0.12 × ($30,650 − $10,275) = $1,027.50 + $2,445.00 = $3,472.50.<br>
+      Withheld: $74.46 × 52 = $3,871.92.<br>
+      More was withheld than owed, so Karecki gets a <b>refund of $399.42</b> ($3,871.92 − $3,472.50).
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>7. Putting it all together</h2>
+    <div class="example">
+      <div class="t">Example (Worksheet #11)</div>
+      The Tobins are married filing jointly with an AGI of $99,500. Their deductions are $2,790 state income tax, $492 city income tax, $4,500 property tax, $5,700 mortgage interest, and $1,350 contributions.<br>
+      Itemized total: $2,790 + $492 + $4,500 + $5,700 + $1,350 = $14,832.<br>
+      Standard deduction for married filing jointly is $25,900, which is larger. Use the standard deduction.<br>
+      Taxable income: $99,500 − $25,900 = $73,600.<br>
+      Schedule Y-1: $73,600 is over $20,550 but not over $83,550, so the tax is $2,055 + 0.12 × ($73,600 − $20,550) = $2,055 + $6,366 = <b>$8,421.00</b>.
+    </div>
+    <div class="btnrow"><button class="btn primary" data-goto="practice">Start practicing</button></div>
+  </div>
+</section>
+
+<!-- ================= TABLES ================= -->
+<section class="panel" id="tables">
+  <div class="card">
+    <h2>2022 standard deductions and tax rate schedules</h2>
+    <div id="allTables"></div>
+  </div>
+</section>
+
+<!-- ================= PRACTICE ================= -->
+<section class="panel" id="practice">
+  <div class="card">
+    <h2>Unlimited practice</h2>
+    <p>Pick a skill. Each problem shows the tables it needs. You can try as many times as you like. If you get stuck, tap <b>I'm stuck</b> to see one step at a time.</p>
+    <div class="skills" id="skillBtns"></div>
+    <div class="stats">
+      <span class="pill" id="stSolved">Solved: 0</span>
+      <span class="pill" id="stStreak">Streak without help: 0</span>
+      <span class="pill" id="stBest">Best streak: 0</span>
+    </div>
+  </div>
+  <div class="card">
+    <div id="pProblem"></div>
+    <div class="btnrow">
+      <button class="btn primary" id="pCheck">Check answer</button>
+      <button class="btn help" id="pStuck">I'm stuck</button>
+      <button class="btn ghost" id="pNew">New problem</button>
+    </div>
+    <div class="fb" id="pFeedback"></div>
+    <div class="hints" id="pHints"></div>
+  </div>
+</section>
+
+<!-- ================= ASSIGNMENT ================= -->
+<section class="panel" id="assign">
+  <div class="card">
+    <h2>Graded assignment</h2>
+    <p>There are 5 questions worth 20 points each. The tables you need are included with each question. There is no help button here, so use the Practice tab first if you need it.</p>
+    <p>Each <b>Check answer</b> button can be used <b>one time</b>. After you check, that question is locked. When you are done, tap <b>Submit for final grade</b>.</p>
+    <div class="namebox"><label for="stuName"><b>Your name:</b></label><br><input id="stuName" autocomplete="name" placeholder="First and last name"></div>
+  </div>
+  <div class="scorebar">
+    <span class="badge" id="aBadge">Score: 0 / 100</span>
+    <span class="pill" id="aProgress">Checked: 0 of 5</span>
+  </div>
+  <div id="aList"></div>
+  <div class="card" id="aSubmitCard">
+    <p>Make sure every answer is entered. Questions you did not check will still be graded as they are typed. Blank answers earn 0 points.</p>
+    <button class="btn primary" id="aSubmit">Submit for final grade</button>
+    <div class="fb" id="aSubmitMsg"></div>
+  </div>
+  <div id="aFinal"></div>
+</section>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3>Submit for final grade?</h3>
+    <p id="modalText"></p>
+    <div class="btnrow">
+      <button class="btn primary" id="modalYes">Submit now</button>
+      <button class="btn ghost" id="modalNo">Go back</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ======================= NUMBER HELPERS ======================= */
+function rint(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function trim(x,d){return String(parseFloat(x.toFixed(d)));}
+function addCommas(s){const p=s.split('.');p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');return p.join('.');}
+function fmtMoney(x){return '$'+addCommas(x.toFixed(2));}
+function m(x){return Number.isInteger(x)?'$'+addCommas(String(x)):fmtMoney(x);}
+function near(v,x){return Math.abs(v-x)<=Math.max(0.011,Math.abs(x)*0.0005);}
+function closeMsg(v,ans){
+  if(Math.abs(v-ans)<=Math.max(1,Math.abs(ans)*0.002))return 'You are very close. Recheck your arithmetic and round to the nearest cent.';
+  return null;
+}
+function cleanStr(s){return String(s).replace(/[$,%\s]/g,'');}
+function parseNum(s){const c=cleanStr(s);if(c==='')return null;if(!/^-?(\d+\.?\d*|\.\d+)$/.test(c))return NaN;return parseFloat(c);}
+function decimalsOf(s){const c=cleanStr(s);const i=c.indexOf('.');return i<0?0:c.length-i-1;}
+
+/* ======================= TAX DATA (2022) ======================= */
+const STATUS={
+  S:{name:'single',label:'Single',sched:'Schedule X',std:12950},
+  M:{name:'married filing jointly',label:'Married filing jointly',sched:'Schedule Y-1',std:25900},
+  MS:{name:'married filing separately',label:'Married filing separately',sched:'Schedule Y-2',std:12950},
+  HH:{name:'head of household',label:'Head of household',sched:'Schedule Z',std:19400}
+};
+const STATS=['S','M','MS','HH'];
+/* [over, not over, base in cents, rate %] */
+const SCHED={
+  S:[[0,10275,0,10],[10275,41775,102750,12],[41775,89075,480750,22],[89075,170050,1521350,24],[170050,215950,3464750,32],[215950,539900,4933550,35],[539900,null,16271800,37]],
+  M:[[0,20550,0,10],[20550,83550,205500,12],[83550,178150,961500,22],[178150,340100,3042700,24],[340100,431900,6929500,32],[431900,647850,9867100,35],[647850,null,17425350,37]],
+  MS:[[0,10275,0,10],[10275,41775,102750,12],[41775,89075,480750,22],[89075,170050,1521350,24],[170050,215950,3464750,32],[215950,323925,4933550,35],[323925,null,8712675,37]],
+  HH:[[0,14650,0,10],[14650,55900,146500,12],[55900,89050,641500,22],[89050,170050,1370800,24],[170050,215950,3314800,32],[215950,539900,4783600,35],[539900,null,16121850,37]]
+};
+function bracket(TI,s){const b=SCHED[s];for(let i=b.length-1;i>=0;i--)if(TI>b[i][0])return b[i];return b[0];}
+function taxCents(TI,s){const r=bracket(TI,s);return r[2]+r[3]*(TI-r[0]);}
+function taxOf(TI,s){return taxCents(TI,s)/100;}
+function saltCap(s){return s==='MS'?5000:10000;}
+
+function schedTable(s){
+  const st=STATUS[s];
+  const rows=SCHED[s].map(r=>'<tr><td>'+m(r[0])+'</td><td>'+(r[1]?m(r[1]):'no limit')+'</td><td>'+(r[2]?fmtMoney(r[2]/100)+' + '+r[3]+'%':r[3]+'%')+'</td><td>'+m(r[0])+'</td></tr>').join('');
+  return '<div class="tblwrap"><div class="tbltitle">'+st.sched+': '+st.label+'</div><table class="sched"><thead><tr><th>If taxable income is over</th><th>But not over</th><th>The tax is</th><th>Of the amount over</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+function stdBox(showCap){
+  return '<div class="stdbox"><b>Standard deductions:</b> Single $12,950 &nbsp;·&nbsp; Married filing jointly $25,900 &nbsp;·&nbsp; Married filing separately $12,950 &nbsp;·&nbsp; Head of household $19,400'+
+    (showCap?'<br><b>Limit:</b> state and local taxes (state income tax + city income tax + property tax) count for at most $10,000, or $5,000 for married filing separately.':'')+'</div>';
+}
+function tablesBox(inner){return '<details class="tables" open><summary>Tables for this problem</summary><div class="inner">'+inner+'</div></details>';}
+
+/* ======================= NAMES ======================= */
+const INDIV=['Maria Lopez','James Carter','Aisha Brown','Daniel Kim','Rosa Martinez','Kevin Walsh','Tanya Price','Luis Romero','Grace Chen','Marcus Hill','Emily Novak','Samuel Ortiz','Nadia Hassan','Brian Doyle'];
+const COUPLES=['The Nguyens','The Fosters','The Patels','The Coopers','The Ramirezes','The Bakers','The Wilsons','The Grants'];
+function nameFor(s){return s==='M'?{n:pick(COUPLES),pl:true}:{n:pick(INDIV),pl:false};}
+function mid(nm){return nm.n.replace(/^The /,'the ');}
+function poss(nm){return nm.pl?mid(nm)+"'":mid(nm)+"'s";}
+function vb(nm,pl,sg){return nm.pl?pl:sg;}
+
+/* ======================= TAX STEPS & DIAGNOSIS ======================= */
+function taxSteps(TI,s){
+  const r=bracket(TI,s),st=STATUS[s],over=r[0],top=r[1],base=r[2],rate=r[3],amt=TI-over,part=rate*amt/100;
+  const out=[st.label+' uses <b>'+st.sched+'</b>.'];
+  if(base===0){
+    out.push(m(TI)+' is not over '+m(top)+', so it is in the first row. The tax is 10% of the taxable income.');
+    out.push('0.10 × '+m(TI)+' = <b>'+fmtMoney(taxOf(TI,s))+'</b>.');
+  }else{
+    out.push(m(TI)+' is over '+m(over)+(top?' but not over '+m(top):'')+'. That row says: '+fmtMoney(base/100)+' + '+rate+'% of the amount over '+m(over)+'.');
+    out.push('Amount over: '+m(TI)+' − '+m(over)+' = '+m(amt)+'.');
+    out.push(rate+'% of that amount: '+(rate/100).toFixed(2)+' × '+m(amt)+' = '+fmtMoney(part)+'.');
+    out.push('Add the base amount: '+fmtMoney(base/100)+' + '+fmtMoney(part)+' = <b>'+fmtMoney(taxOf(TI,s))+'</b>.');
+  }
+  return out;
+}
+function taxDiag(v,TI,s,extra){
+  const r=bracket(TI,s),over=r[0],base=r[2]/100,rate=r[3]/100,tax=taxOf(TI,s);
+  if(extra){const e=extra(v);if(e)return e;}
+  if(base>0&&near(v,rate*TI))return 'You used the rate on the whole taxable income. Use it only on the amount over '+m(over)+', then add the base amount of '+fmtMoney(base)+'.';
+  if(base>0&&near(v,rate*(TI-over)))return 'You found '+(rate*100)+'% of the amount over '+m(over)+'. Now add the base amount of '+fmtMoney(base)+' from the schedule.';
+  if(base>0&&near(v,base+rate*TI))return 'Use the rate on the <b>amount over</b> '+m(over)+', not on the whole taxable income.';
+  for(const o of STATS){if(o!==s&&taxCents(TI,o)!==taxCents(TI,s)&&near(v,taxOf(TI,o)))return 'That is the tax from '+STATUS[o].sched+'. For '+STATUS[s].name+', use '+STATUS[s].sched+'.';}
+  const b=SCHED[s];
+  for(const row of b){if(row!==r&&near(v,row[2]/100+row[3]/100*(TI-row[0])))return 'Check which row you used. '+m(TI)+' belongs in the row that starts at '+m(over)+'.';}
+  return closeMsg(v,tax);
+}
+
+/* ======================= MAKERS ======================= */
+function mkAGI(nm,jobs,int,misc,div,adj){
+  const total=jobs+int+misc+div,agi=total-adj;
+  const items=[['income from jobs',jobs],['interest',int],['miscellaneous income',misc],['dividend income',div]];
+  return {skill:'agi',
+    stem:'Last year, '+nm.n+' earned <b>'+m(jobs)+'</b> from jobs, <b>'+m(int)+'</b> in interest, <b>'+m(misc)+'</b> in miscellaneous income, and <b>'+m(div)+'</b> in dividend income. '+nm.n+' had adjustments to income of <b>'+m(adj)+'</b>. Find the adjusted gross income.',
+    tables:'',
+    parts:[{kind:'money',label:'Adjusted gross income',prefix:'$',answer:agi,tol:0.005,display:fmtMoney(agi),
+      diagnose:v=>{
+        if(adj>0&&near(v,total+adj))return 'You added the adjustments. Adjustments to income are <b>subtracted</b>.';
+        if(adj>0&&near(v,total))return 'That is the total income. Now subtract the adjustments to income.';
+        for(const it of items){if(it[1]>0&&near(v,agi-it[1]))return 'It looks like you left out the '+it[0]+' ('+m(it[1])+'). Add all four income amounts.';}
+        if(Math.abs(v-agi)<=100)return 'Close. Recheck your addition and subtraction.';
+        return null;
+      }}],
+    steps:['<div class="formula">AGI = Total income − Adjustments to income</div>',
+      'Add all the income: '+m(jobs)+' + '+m(int)+' + '+m(misc)+' + '+m(div)+' = <b>'+m(total)+'</b>.',
+      'Subtract the adjustments: '+m(total)+' − '+m(adj)+' = <b>'+m(agi)+'</b>.'],
+    answerLine:'Answer: the adjusted gross income is <b>'+fmtMoney(agi)+'</b>.'};
+}
+
+function mkTaxCalc(nm,s,TI){
+  const tax=taxOf(TI,s);
+  return {skill:'taxcalc',
+    stem:nm.n+' '+vb(nm,'file','files')+' as <b>'+STATUS[s].name+'</b> and '+vb(nm,'have','has')+' a taxable income of <b>'+m(TI)+'</b>. Use the tax rate schedule to find the tax owed.',
+    tables:tablesBox(schedTable(s)),
+    parts:[{kind:'money',label:'Tax owed',prefix:'$',answer:tax,tol:0.005,display:fmtMoney(tax),note:'Round to the nearest cent.',diagnose:v=>taxDiag(v,TI,s)}],
+    steps:taxSteps(TI,s),
+    answerLine:'Answer: the tax owed is <b>'+fmtMoney(tax)+'</b>.'};
+}
+
+function mkDeduct(nm,s,AGI,item){
+  const std=STATUS[s].std,useStd=std>=item,ded=Math.max(std,item),small=Math.min(std,item),TI=AGI-ded,tax=taxOf(TI,s);
+  const which=useStd?'Standard deduction':'Itemized deduction';
+  return {skill:'deduct',
+    stem:nm.n+' '+vb(nm,'file','files')+' as <b>'+STATUS[s].name+'</b>. The adjusted gross income is <b>'+m(AGI)+'</b>, and the itemized deductions total <b>'+m(item)+'</b>. Decide which deduction is larger, then find the taxable income and the tax owed.',
+    tables:tablesBox(stdBox(false)+schedTable(s)),
+    parts:[
+      {type:'choice',label:'Which deduction is larger?',options:['Standard deduction','Itemized deduction'],answer:which,display:which,
+        diagnose:()=>'Compare the itemized total, '+m(item)+', with the standard deduction for '+STATUS[s].name+' from the table.'},
+      {kind:'money',label:'Taxable income',prefix:'$',answer:TI,tol:0.005,display:fmtMoney(TI),
+        diagnose:v=>{
+          if(near(v,AGI-small))return 'You subtracted the smaller deduction. Always subtract the <b>larger</b> one.';
+          if(near(v,AGI))return 'That is the AGI. Subtract the larger deduction to get taxable income.';
+          if(near(v,AGI+ded))return 'Deductions are <b>subtracted</b> from the AGI, not added.';
+          for(const o of STATS){if(STATUS[o].std!==std&&near(v,AGI-STATUS[o].std))return 'That standard deduction belongs to a different filing status. Use the one for '+STATUS[s].name+'.';}
+          return null;
+        }},
+      {kind:'money',label:'Tax owed',prefix:'$',answer:tax,tol:0.005,display:fmtMoney(tax),note:'Round to the nearest cent.',
+        diagnose:v=>taxDiag(v,TI,s,x=>near(x,taxOf(AGI,s))?'You found the tax on the AGI. The tax comes from the <b>taxable income</b>.':null)}],
+    steps:['The standard deduction for '+STATUS[s].name+' is <b>'+m(std)+'</b>. The itemized deductions are '+m(item)+'.',
+      (useStd?m(std)+' is larger than '+m(item)+', so use the <b>standard deduction</b>.':m(item)+' is larger than '+m(std)+', so use the <b>itemized deductions</b>.'),
+      'Taxable income: '+m(AGI)+' − '+m(ded)+' = <b>'+m(TI)+'</b>.'].concat(taxSteps(TI,s)),
+    answerLine:'Answer: the '+which.toLowerCase()+' is larger, the taxable income is <b>'+fmtMoney(TI)+'</b>, and the tax is <b>'+fmtMoney(tax)+'</b>.'};
+}
+
+function mkRefund(nm,s,TI,perCents,period){
+  const T=taxCents(TI,s),n=period==='weekly'?52:12,W=perCents*n,diff=W-T;
+  const tax=T/100,wh=W/100,amt=Math.abs(diff)/100;
+  const res=diff>0?'Gets a refund':'Owes more tax';
+  return {skill:'refund',
+    stem:nm.n+' '+vb(nm,'file','files')+' as <b>'+STATUS[s].name+'</b> and '+vb(nm,'have','has')+' a taxable income of <b>'+m(TI)+'</b>. Federal income tax of <b>'+fmtMoney(perCents/100)+' '+period+'</b> was withheld. Assume a 52-week year. Find the tax owed and the total withheld, then decide whether '+mid(nm)+' '+vb(nm,'get','gets')+' a refund or '+vb(nm,'owe','owes')+' more tax, and how much.',
+    tables:tablesBox(schedTable(s)),
+    parts:[
+      {kind:'money',label:'Tax owed for the year',prefix:'$',answer:tax,tol:0.005,display:fmtMoney(tax),note:'Round to the nearest cent.',diagnose:v=>taxDiag(v,TI,s)},
+      {kind:'money',label:'Total withheld for the year',prefix:'$',answer:wh,tol:0.005,display:fmtMoney(wh),
+        diagnose:v=>{
+          if(period==='weekly'&&near(v,perCents*12/100))return 'The tax was withheld <b>weekly</b>. A year has 52 weeks, so multiply by 52.';
+          if(period==='monthly'&&near(v,perCents*52/100))return 'The tax was withheld <b>monthly</b>. A year has 12 months, so multiply by 12.';
+          if(near(v,perCents*26/100)||near(v,perCents*24/100))return 'Check the period. Weekly means × 52 and monthly means × 12.';
+          return closeMsg(v,wh);
+        }},
+      {type:'choice',label:'Refund or tax due?',options:['Gets a refund','Owes more tax'],answer:res,display:res,
+        diagnose:()=>'Compare the two amounts. If more was withheld than owed, it is a refund. If less was withheld, more tax is due.'},
+      {kind:'money',label:'Amount of the refund or tax due',prefix:'$',answer:amt,tol:0.005,display:fmtMoney(amt),note:'Round to the nearest cent.',
+        diagnose:v=>{
+          if(near(v,(W+T)/100))return 'You added. The refund or tax due is the <b>difference</b>: subtract the smaller amount from the larger one.';
+          if(near(v,tax)||near(v,wh))return 'That is one of the two amounts. Subtract to find the difference.';
+          return closeMsg(v,amt);
+        }}],
+    steps:taxSteps(TI,s).concat([
+      'Total withheld: '+fmtMoney(perCents/100)+' × '+n+' '+(n===52?'weeks':'months')+' = <b>'+fmtMoney(wh)+'</b>.',
+      (diff>0?'Withheld ('+fmtMoney(wh)+') is more than the tax owed ('+fmtMoney(tax)+'), so '+mid(nm)+' '+vb(nm,'get','gets')+' a <b>refund</b>.':'Withheld ('+fmtMoney(wh)+') is less than the tax owed ('+fmtMoney(tax)+'), so '+mid(nm)+' '+vb(nm,'owe','owes')+' <b>more tax</b>.'),
+      'Difference: '+fmtMoney(Math.max(wh,tax))+' − '+fmtMoney(Math.min(wh,tax))+' = <b>'+fmtMoney(amt)+'</b>.']),
+    answerLine:'Answer: '+(diff>0?'a refund of ':'tax due of ')+'<b>'+fmtMoney(amt)+'</b>.'};
+}
+
+/* p: {nm,s,agi|income:{wages,div,int,other,adj}, state,city,prop,mort,contrib} */
+function mkItemized(p){
+  const nm=p.nm,s=p.s,st=STATUS[s],inc=p.income;
+  const AGI=inc?inc.wages+inc.div+inc.int+inc.other-inc.adj:p.agi;
+  const salt=p.state+p.city+p.prop,cap=saltCap(s),saltUsed=Math.min(salt,cap);
+  const item=saltUsed+p.mort+p.contrib,itemNoCap=salt+p.mort+p.contrib;
+  const std=st.std,useStd=std>=item,ded=Math.max(std,item),TI=AGI-ded,tax=taxOf(TI,s);
+  const which=useStd?'Standard deduction':'Itemized deductions';
+  let incText;
+  if(inc){
+    const bits=['wages of <b>'+m(inc.wages)+'</b>'];
+    if(inc.other)bits.push('other income of <b>'+m(inc.other)+'</b>');
+    if(inc.div)bits.push('dividends of <b>'+m(inc.div)+'</b>');
+    if(inc.int)bits.push('interest of <b>'+m(inc.int)+'</b>');
+    const last=bits.pop();
+    incText=nm.n+' had '+(bits.length?bits.join(', ')+', and '+last:last)+' last year, with adjustments to income of <b>'+m(inc.adj)+'</b>.';
+  }else incText=nm.n+' had an adjusted gross income of <b>'+m(AGI)+'</b> last year.';
+  const d=[];
+  if(p.state)d.push('<b>'+m(p.state)+'</b> for state income tax');
+  if(p.city)d.push('<b>'+m(p.city)+'</b> for city income tax');
+  if(p.prop)d.push('<b>'+m(p.prop)+'</b> for property tax');
+  if(p.mort)d.push('<b>'+m(p.mort)+'</b> in mortgage interest');
+  if(p.contrib)d.push('<b>'+m(p.contrib)+'</b> in charitable contributions');
+  const dl=d.pop();
+  const stem=incText+' The possible deductions were '+(d.length?d.join(', ')+', and '+dl:dl)+'. '+nm.n+' '+vb(nm,'file','files')+' as <b>'+st.name+'</b>. Find the tax.';
+  const parts=[];
+  if(inc)parts.push({kind:'money',label:'Adjusted gross income',prefix:'$',answer:AGI,tol:0.005,display:fmtMoney(AGI),
+    diagnose:v=>{
+      if(inc.adj&&near(v,AGI+2*inc.adj))return 'You added the adjustments. Adjustments to income are <b>subtracted</b>.';
+      if(inc.adj&&near(v,AGI+inc.adj))return 'That is the total income. Now subtract the adjustments to income.';
+      if(Math.abs(v-AGI)<=100)return 'Close. Recheck your addition and subtraction.';
+      return null;
+    }});
+  parts.push({kind:'money',label:'Total itemized deductions',prefix:'$',answer:item,tol:0.005,display:fmtMoney(item),
+    diagnose:v=>{
+      if(salt>cap&&near(v,itemNoCap))return 'State and local taxes add up to '+m(salt)+', but only '+m(cap)+' can be counted'+(s==='MS'?' when married filing separately':'')+'.';
+      for(const x of [p.state,p.city,p.prop,p.mort,p.contrib]){if(x&&near(v,item-x))return 'It looks like you left out one of the deductions. Add all of them.';}
+      if(Math.abs(v-item)<=100)return 'Close. Recheck your addition.';
+      return null;
+    }});
+  parts.push({type:'choice',label:'Which deduction should be used?',options:['Standard deduction','Itemized deductions'],answer:which,display:which,
+    diagnose:()=>'Use whichever is larger: the itemized total or the standard deduction for '+st.name+'.'});
+  parts.push({kind:'money',label:'Taxable income',prefix:'$',answer:TI,tol:0.005,display:fmtMoney(TI),
+    diagnose:v=>{
+      if(near(v,AGI-Math.min(std,item)))return 'You subtracted the smaller deduction. Always subtract the <b>larger</b> one.';
+      if(salt>cap&&!useStd&&near(v,AGI-itemNoCap))return 'Remember the '+m(cap)+' limit on state and local taxes before you subtract.';
+      if(near(v,AGI))return 'That is the AGI. Subtract the larger deduction to get taxable income.';
+      return null;
+    }});
+  parts.push({kind:'money',label:'Tax owed',prefix:'$',answer:tax,tol:0.005,display:fmtMoney(tax),note:'Round to the nearest cent.',
+    diagnose:v=>taxDiag(v,TI,s,x=>near(x,taxOf(AGI,s))?'You found the tax on the AGI. The tax comes from the <b>taxable income</b>.':null)});
+  const steps=[];
+  if(inc)steps.push('AGI: '+m(inc.wages)+(inc.other?' + '+m(inc.other):'')+(inc.div?' + '+m(inc.div):'')+(inc.int?' + '+m(inc.int):'')+' − '+m(inc.adj)+' = <b>'+m(AGI)+'</b>.');
+  steps.push('State and local taxes: '+[p.state,p.city,p.prop].filter(x=>x).map(m).join(' + ')+' = '+m(salt)+'.'+(salt>cap?' This is over the limit, so count only <b>'+m(cap)+'</b>.':' This is under the '+m(cap)+' limit, so all of it counts.'));
+  steps.push('Itemized total: '+[saltUsed,p.mort,p.contrib].filter(x=>x).map(m).join(' + ')+' = <b>'+m(item)+'</b>.');
+  steps.push('The standard deduction for '+st.name+' is '+m(std)+'. '+(useStd?m(std)+' is larger, so use the <b>standard deduction</b>.':m(item)+' is larger, so use the <b>itemized deductions</b>.'));
+  steps.push('Taxable income: '+m(AGI)+' − '+m(ded)+' = <b>'+m(TI)+'</b>.');
+  return {skill:'itemized',stem,tables:tablesBox(stdBox(true)+schedTable(s)),parts,steps:steps.concat(taxSteps(TI,s)),
+    answerLine:'Answer: '+(inc?'AGI '+fmtMoney(AGI)+', ':'')+'itemized deductions '+fmtMoney(item)+', use the '+which.toLowerCase()+', taxable income '+fmtMoney(TI)+', and tax <b>'+fmtMoney(tax)+'</b>.'};
+}
+
+/* ======================= RANDOM GENERATORS ======================= */
+function tiRange(s){return s==='M'?rint(8000,330000):rint(4000,230000);}
+function agiRange(s){return s==='M'?rint(45000,260000):s==='HH'?rint(30000,180000):rint(24000,170000);}
+const GEN={
+  agi:()=>mkAGI({n:pick(INDIV),pl:false},rint(18000,95000),Math.random()<0.2?0:rint(20,2500),Math.random()<0.25?0:rint(50,3000),Math.random()<0.25?0:rint(20,1500),Math.random()<0.15?0:rint(100,4000)),
+  taxcalc:()=>{const s=pick(STATS);return mkTaxCalc(nameFor(s),s,tiRange(s));},
+  deduct:()=>{
+    for(;;){
+      const s=pick(STATS),std=STATUS[s].std;let item=Math.round(std*(0.3+Math.random()*1.4));if(item===std)item+=137;
+      const AGI=agiRange(s);if(AGI-Math.max(std,item)<2000)continue;
+      return mkDeduct(nameFor(s),s,AGI,item);
+    }
+  },
+  refund:()=>{
+    for(;;){
+      const s=pick(STATS),TI=s==='M'?rint(15000,260000):rint(9000,190000),T=taxCents(TI,s);
+      const period=Math.random()<0.5?'weekly':'monthly',n=period==='weekly'?52:12;
+      const per=Math.round(T*(0.82+Math.random()*0.36)/n);
+      if(per<=0||Math.abs(per*n-T)<2000)continue;
+      return mkRefund(nameFor(s),s,TI,per,period);
+    }
+  },
+  itemized:()=>{
+    for(;;){
+      const s=pick(STATS),nm=nameFor(s);let p={nm,s};
+      if(Math.random()<0.35){
+        const inc={wages:s==='M'?rint(55000,240000):rint(35000,200000),div:Math.random()<0.3?0:rint(50,1500),int:Math.random()<0.3?0:rint(50,2500),other:Math.random()<0.7?0:rint(200,6000),adj:Math.random()<0.2?0:rint(300,3500)};
+        p.income=inc;
+      }else p.agi=agiRange(s);
+      const AGI=p.income?p.income.wages+p.income.div+p.income.int+p.income.other-p.income.adj:p.agi;
+      p.state=Math.round(AGI*(0.015+Math.random()*0.045));
+      p.city=Math.random()<0.3?0:Math.round(AGI*(0.002+Math.random()*0.01));
+      p.prop=rint(1200,9500);
+      p.mort=Math.random()<0.15?0:rint(2500,16000);
+      p.contrib=rint(150,6500);
+      const item=Math.min(p.state+p.city+p.prop,saltCap(s))+p.mort+p.contrib;
+      if(item===STATUS[s].std||AGI-Math.max(item,STATUS[s].std)<=0)continue;
+      return mkItemized(p);
+    }
+  }
+};
+const SKILLS=[['agi','Adjusted gross income'],['taxcalc','Using the tax schedule'],['deduct','Deduction, taxable income & tax'],['refund','Refund or tax due'],['itemized','Itemized deductions word problems'],['mixed','Mixed review']];
+const SKILL_NAME=Object.fromEntries(SKILLS);
+
+/* ======================= ASSIGNMENT (fixed) ======================= */
+const A_QS=[
+  mkAGI({n:'Tyler Grayson',pl:false},41380,612,1275,348,1960),
+  mkDeduct({n:'D. Alvarez',pl:false},'S',58740,9380),
+  mkRefund({n:'The Okafors',pl:true},'M',96420,108540,'monthly'),
+  mkItemized({nm:{n:'The Brennans',pl:true},s:'M',agi:112800,state:3460,city:615,prop:5280,mort:9850,contrib:2400}),
+  mkItemized({nm:{n:'Renee Castillo',pl:false},s:'HH',income:{wages:96450,div:520,int:1140,other:0,adj:2310},state:4980,city:1120,prop:6340,mort:8760,contrib:2150})
+];
+
+/* ======================= GRADING ======================= */
+function evalPart(p,raw){
+  if(p.type==='choice'){if(!raw)return {blank:true,ok:false};return {ok:raw===p.answer,v:raw};}
+  if(String(raw).trim()==='')return {blank:true,ok:false};
+  const v=parseNum(raw);
+  if(v===null)return {blank:true,ok:false};
+  if(isNaN(v))return {ok:false,msg:'Type a number only, such as 1234.56. You can leave out the $ and commas.'};
+  if(p.kind==='money'&&decimalsOf(raw)>2){
+    if(Math.abs(v-p.answer)<0.01)return {ok:false,v,msg:'Round to the nearest cent, using exactly two decimal places.'};
+    return {ok:false,v};
+  }
+  return {ok:Math.abs(v-p.answer)<=p.tol+1e-9,v};
+}
+
+/* ======================= SCORM (optional) ======================= */
+const SCORM=(function(){
+  let api=null,ver=null;
+  function find(w){let n=0;while(w&&n<12){try{if(w.API_1484_11){ver='2004';return w.API_1484_11;}if(w.API){ver='1.2';return w.API;}}catch(e){return null;}if(w.parent===w)break;w=w.parent;n++;}return null;}
+  return {
+    init(){try{api=find(window)||(window.opener?find(window.opener):null);if(api){ver==='2004'?api.Initialize(''):api.LMSInitialize('');}}catch(e){api=null;}},
+    report(score){
+      if(!api)return;
+      try{
+        if(ver==='2004'){api.SetValue('cmi.score.raw',String(score));api.SetValue('cmi.score.min','0');api.SetValue('cmi.score.max','100');api.SetValue('cmi.score.scaled',(score/100).toFixed(2));api.SetValue('cmi.completion_status','completed');api.Commit('');}
+        else{api.LMSSetValue('cmi.core.score.raw',String(score));api.LMSSetValue('cmi.core.score.min','0');api.LMSSetValue('cmi.core.score.max','100');api.LMSSetValue('cmi.core.lesson_status','completed');api.LMSCommit('');}
+      }catch(e){}
+    },
+    finish(){if(!api)return;try{ver==='2004'?api.Terminate(''):api.LMSFinish('');}catch(e){}}
+  };
+})();
+
+/* ======================= UI ======================= */
+function partHTML(p,pre,i){
+  if(p.type==='choice'){
+    return '<div class="part"><span class="q">'+p.label+'</span><div class="choices" id="'+pre+'b'+i+'">'+
+      p.options.map(o=>'<label class="choice"><input type="radio" name="'+pre+'c'+i+'" value="'+o+'"> '+o+'</label>').join('')+'</div></div>';
+  }
+  return '<div class="part"><label class="q" for="'+pre+'i'+i+'">'+p.label+'</label><div class="inbox" id="'+pre+'b'+i+'">'+
+    (p.prefix?'<span>'+p.prefix+'</span>':'')+'<input id="'+pre+'i'+i+'" inputmode="decimal" autocomplete="off" spellcheck="false">'+
+    (p.suffix?'<span>'+p.suffix+'</span>':'')+'</div>'+(p.note?'<div class="note">'+p.note+'</div>':'')+'</div>';
+}
+function readPart(p,pre,i){
+  if(p.type==='choice'){const r=document.querySelector('input[name="'+pre+'c'+i+'"]:checked');return r?r.value:'';}
+  return document.getElementById(pre+'i'+i).value;
+}
+function setPartLock(p,pre,i,locked){
+  if(p.type==='choice')document.querySelectorAll('input[name="'+pre+'c'+i+'"]').forEach(r=>r.disabled=locked);
+  else document.getElementById(pre+'i'+i).disabled=locked;
+}
+function fmtPts(x){return trim(x,2);}
+
+function initUI(){
+  const $=s=>document.querySelector(s);
+  $('#allTables').innerHTML=stdBox(true)+STATS.map(schedTable).join('');
+
+  function showTab(id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===id));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.tab)));
+  document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.goto)));
+
+  /* ---------- practice ---------- */
+  let skill='agi',cur=null,stuckStep=0,solved=false,usedHelp=false;
+  const stats={solved:0,streak:0,best:0};
+  $('#skillBtns').innerHTML=SKILLS.map(s=>'<button class="skill'+(s[0]===skill?' active':'')+'" data-skill="'+s[0]+'">'+s[1]+'</button>').join('');
+  document.querySelectorAll('.skill').forEach(b=>b.addEventListener('click',()=>{
+    skill=b.dataset.skill;document.querySelectorAll('.skill').forEach(x=>x.classList.toggle('active',x===b));newProblem();
+  }));
+  function updStats(){
+    $('#stSolved').textContent='Solved: '+stats.solved;
+    $('#stStreak').textContent='Streak without help: '+stats.streak;
+    $('#stBest').textContent='Best streak: '+stats.best;
+  }
+  function newProblem(){
+    const k=skill==='mixed'?pick(SKILLS.slice(0,5))[0]:skill;
+    cur=GEN[k]();stuckStep=0;solved=false;usedHelp=false;
+    $('#pProblem').innerHTML='<div class="tag">'+SKILL_NAME[cur.skill]+'</div><div class="stem">'+cur.stem+'</div>'+cur.tables+cur.parts.map((p,i)=>partHTML(p,'p',i)).join('');
+    const fb=$('#pFeedback');fb.className='fb';fb.innerHTML='';
+    $('#pHints').innerHTML='';$('#pCheck').disabled=false;updStuck();
+    $('#pProblem').querySelectorAll('input:not([type])').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkPractice();}));
+  }
+  function updStuck(){
+    const b=$('#pStuck'),n=cur.steps.length;b.disabled=false;
+    if(stuckStep===0)b.textContent="I'm stuck";
+    else if(stuckStep<n)b.textContent='Show step '+(stuckStep+1)+' of '+n;
+    else if(stuckStep===n)b.textContent='Show the answer';
+    else{b.textContent='All steps shown';b.disabled=true;}
+  }
+  function renderHints(){
+    let h='';
+    for(let k=0;k<Math.min(stuckStep,cur.steps.length);k++)h+='<div class="step"><div class="n">Step '+(k+1)+'</div>'+cur.steps[k]+'</div>';
+    if(stuckStep>cur.steps.length)h+='<div class="answer">'+cur.answerLine+'</div>';
+    $('#pHints').innerHTML=h;updStuck();
+  }
+  function checkPractice(){
+    if(solved)return;
+    let allOk=true,anyBlank=false;const msgs=[];
+    cur.parts.forEach((p,i)=>{
+      const raw=readPart(p,'p',i),r=evalPart(p,raw),box=document.getElementById('pb'+i);
+      box.classList.remove('ok','bad');
+      if(r.blank){anyBlank=true;allOk=false;return;}
+      box.classList.add(r.ok?'ok':'bad');
+      if(!r.ok){allOk=false;const mm=r.msg||(p.diagnose?p.diagnose(r.v,raw):null);
+        msgs.push('<li><b>'+p.label+':</b> '+(mm||'Not quite yet. Look at your work again and try once more.')+'</li>');}
+    });
+    const fb=$('#pFeedback');
+    if(allOk){
+      solved=true;stats.solved++;
+      if(!usedHelp){stats.streak++;stats.best=Math.max(stats.best,stats.streak);}else stats.streak=0;
+      updStats();
+      fb.className='fb show good';
+      fb.innerHTML='<b>Correct. Nice work!</b>'+(usedHelp?' Try the next one on your own to build your streak.':'')+
+        '<div class="btnrow"><button class="btn primary" id="pNext">Next problem</button><button class="btn ghost" id="pSol">Show full solution</button></div>';
+      $('#pNext').onclick=newProblem;
+      $('#pSol').onclick=()=>{stuckStep=cur.steps.length+1;renderHints();};
+      $('#pCheck').disabled=true;cur.parts.forEach((p,i)=>setPartLock(p,'p',i,true));
+      return;
+    }
+    stats.streak=0;updStats();
+    if(msgs.length===0&&anyBlank){fb.className='fb show info';fb.innerHTML='Fill in every blank, then check your answer.';return;}
+    fb.className='fb show wrong';
+    fb.innerHTML='<b>Not quite yet.</b><ul>'+msgs.join('')+'</ul>'+(anyBlank?'<p>Some blanks are still empty.</p>':'')+
+      '<p>You can try again as many times as you want. Tap <b>I\'m stuck</b> to see one step at a time.</p>';
+  }
+  $('#pCheck').onclick=checkPractice;
+  $('#pNew').onclick=newProblem;
+  $('#pStuck').onclick=()=>{usedHelp=true;if(stuckStep<=cur.steps.length)stuckStep++;renderHints();};
+  newProblem();updStats();
+
+  /* ---------- assignment ---------- */
+  const state=A_QS.map(()=>({checked:false,pts:0,res:[]}));
+  let submitted=false;
+  $('#aList').innerHTML=A_QS.map((q,qi)=>
+    '<div class="card aq" id="aq'+qi+'"><div class="qhead"><h3>Question '+(qi+1)+'</h3><span class="pts" id="apts'+qi+'">20 points</span></div>'+
+    '<div class="stem">'+q.stem+'</div>'+q.tables+q.parts.map((p,i)=>partHTML(p,'a'+qi+'_',i)).join('')+
+    '<div class="btnrow"><button class="btn primary" id="acheck'+qi+'">Check answer</button></div><div class="fb" id="ares'+qi+'"></div></div>'
+  ).join('');
+  function grade(qi){
+    const q=A_QS[qi],per=20/q.parts.length;let pts=0;
+    const res=q.parts.map((p,i)=>{const r=evalPart(p,readPart(p,'a'+qi+'_',i));if(r.ok)pts+=per;return !!r.ok;});
+    return {pts:Math.round(pts*100)/100,res};
+  }
+  function markQ(qi){
+    const q=A_QS[qi],s=state[qi];
+    q.parts.forEach((p,i)=>{setPartLock(p,'a'+qi+'_',i,true);const b=document.getElementById('a'+qi+'_b'+i);b.classList.remove('ok','bad');b.classList.add(s.res[i]?'ok':'bad');});
+    $('#acheck'+qi).disabled=true;
+    const fb=$('#ares'+qi),full=s.pts>=19.99;
+    fb.className='fb show '+(full?'good':s.pts>0?'info':'wrong');
+    fb.innerHTML=(full?'<b>Correct.</b> ':s.pts>0?'<b>Partly correct.</b> ':'<b>Incorrect.</b> ')+'You earned '+fmtPts(s.pts)+' of 20 points.';
+    $('#apts'+qi).textContent=fmtPts(s.pts)+' / 20 points';
+  }
+  function total(){return Math.round(state.reduce((a,s)=>a+s.pts,0)*100)/100;}
+  function updBadge(){
+    $('#aBadge').textContent=(submitted?'Final: ':'Score: ')+fmtPts(total())+' / 100';
+    $('#aProgress').textContent=submitted?'Submitted':'Checked: '+state.filter(s=>s.checked).length+' of 5';
+  }
+  A_QS.forEach((q,qi)=>{
+    $('#acheck'+qi).onclick=()=>{
+      if(submitted||state[qi].checked)return;
+      const blank=q.parts.some((p,i)=>String(readPart(p,'a'+qi+'_',i)).trim()==='');
+      const fb=$('#ares'+qi);
+      if(blank){fb.className='fb show info';fb.innerHTML='Fill in every blank before you check. You only get one check per question.';return;}
+      const g=grade(qi);state[qi]={checked:true,pts:g.pts,res:g.res};markQ(qi);updBadge();
+    };
+    document.querySelectorAll('#aq'+qi+' input:not([type])').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter')$('#acheck'+qi).click();}));
+  });
+  $('#aSubmit').onclick=()=>{
+    if(submitted)return;
+    const nm=$('#stuName').value.trim(),msg=$('#aSubmitMsg');
+    if(!nm){msg.className='fb show info';msg.innerHTML='Type your name at the top of the assignment before you submit.';$('#stuName').focus();return;}
+    msg.className='fb';
+    const left=state.filter(s=>!s.checked).length;
+    $('#modalText').textContent=left?'You have not checked '+left+' question'+(left>1?'s':'')+'. '+(left>1?'They':'It')+' will be graded as typed, and blank answers earn 0 points. You cannot change anything after you submit.':'You cannot change anything after you submit.';
+    $('#overlay').classList.add('show');$('#modalYes').focus();
+  };
+  $('#modalNo').onclick=()=>$('#overlay').classList.remove('show');
+  $('#modalYes').onclick=()=>{
+    $('#overlay').classList.remove('show');submitted=true;
+    A_QS.forEach((q,qi)=>{
+      if(!state[qi].checked){const g=grade(qi);state[qi]={checked:true,pts:g.pts,res:g.res};markQ(qi);}
+      q.parts.forEach((p,i)=>{if(!state[qi].res[i]){const d=document.createElement('div');d.className='reveal';d.innerHTML='Correct answer for '+p.label.toLowerCase()+': '+p.display;document.getElementById('ares'+qi).appendChild(d);}});
+    });
+    $('#stuName').disabled=true;$('#aSubmitCard').style.display='none';
+    const t=total(),pct=Math.round(t);updBadge();
+    $('#aFinal').innerHTML='<div class="card final"><h2>Final grade</h2><div class="big">'+fmtPts(t)+' / 100</div>'+
+      '<p><b>Student:</b> '+$('#stuName').value.replace(/[<>&]/g,'')+'<br><b>Submitted:</b> '+new Date().toLocaleString()+'<br><b>Percent:</b> '+pct+'%</p>'+
+      '<ul>'+state.map((s,i)=>'<li>Question '+(i+1)+': '+fmtPts(s.pts)+' / 20</li>').join('')+'</ul>'+
+      '<p>This assignment is now locked. Scroll up to review the correct answers for anything you missed. If your instructor asks, take a screenshot of this box.</p></div>';
+    SCORM.report(pct);
+    document.getElementById('aFinal').scrollIntoView({behavior:'smooth'});
+  };
+  SCORM.init();
+  window.addEventListener('beforeunload',()=>SCORM.finish());
+}
+if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',initUI);
+</script>
+</body>
+</html>
